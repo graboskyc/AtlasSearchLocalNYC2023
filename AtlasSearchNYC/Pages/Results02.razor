@@ -1,0 +1,74 @@
+@page "/Results02/{SearchTerm}"
+@using MongoDB.Bson;
+@using MongoDB.Driver;
+@using AtlasSearchNYC.Datamodels;
+@using System;
+
+<PageTitle>Content</PageTitle>
+
+<h1>Content Search Resuts</h1>
+
+<SearchBarBasic SearchTerm="@SearchTerm" Redirect="Results02"  OnSearchCallback="@ChangeSearchTerm" />
+
+<div class="row" style="margin-top:20px;">
+    @if(movies != null) {
+        @foreach (var t in movies)
+        {
+            <div class="card" style="width: 18rem;float:left;margin:10px;padding:20px">
+                <div class="card-body">
+                    <h5 class="card-title">@t.title</h5>
+                    <p class="card-text">@t.fullplot</p>
+                </div>
+                <div class="card-footer">
+                    @t._id
+                </div>
+            </div>
+        }
+    }
+</div>
+
+
+@code {
+    [Parameter]
+    public string SearchTerm {get; set;}
+    private List<Datamodels.Movie> movies = null;
+
+    private async void ChangeSearchTerm(string term) {
+        SearchTerm = term;
+        await RunSearch();
+    }
+
+    protected override async Task OnInitializedAsync()
+    { 
+        await RunSearch();
+
+    }
+
+    private async Task RunSearch() {
+        var pipeline = new BsonDocument[] {
+            new BsonDocument("$search", 
+            new BsonDocument("text", 
+            new BsonDocument
+                    {
+                        { "query", SearchTerm }, 
+                        { "path", 
+            new BsonArray
+                        {
+                            "fullplot",
+                            "title"
+                        } }
+                    }))
+        };
+
+        string MDBCONNSTR = Environment.GetEnvironmentVariable("MDBCONNSTR");
+        var settings = MongoClientSettings.FromConnectionString(MDBCONNSTR);
+        settings.ServerApi = new ServerApi(ServerApiVersion.V1);
+        var client = new MongoClient(settings);
+        var database = client.GetDatabase("sample_mflix");
+        var col = database.GetCollection<Datamodels.Movie>("movies"); 
+
+        var result = await col.Aggregate<Datamodels.Movie>(pipeline).ToListAsync();
+        movies = result;
+
+    }
+}

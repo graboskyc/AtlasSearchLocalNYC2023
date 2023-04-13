@@ -1,0 +1,27 @@
+.input-group-text {
+  background-color:  var(--mdb-white);  
+  border-color: var(--mdb-evergreen);
+  border-radius: 7px;
+  border-width: 3px;
+}
+
+input {
+  background-color:  var(--mdb-white);  
+  border-color: var(--mdb-evergreen);
+  border-radius: 7px;
+  border-width: 3px;
+}
+
+.btn-search { 
+    background-color: var(--mdb-white);
+    border-color: var(--mdb-evergreen);
+    border-radius: 7px;
+    border-width: 3px;
+}
+
+.btn-search:hover, .btn-search:focus, .btn-search:active, .btn-search.active, .open>.dropdown-toggle.btn-search {
+    color: var(--mdb-white);
+    background-color: var(--mdb-evergreen);
+    border-color: var(--mdb-evergreen);
+    border-width: 3px;
+}

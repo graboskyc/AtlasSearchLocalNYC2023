@@ -2,10 +2,10 @@
 
 <div class="input-group input-group-lg">
   <span class="input-group-text">
-    <img src='/BrandAssets/Icons/Technical_ATLAS_Search10x.png' width="100px" />
+    <img src='/BrandAssets/Icons/Technical_ATLAS_Search10x.png' width="50" />
   </span>
-  <input type="text" class="form-control" placeholder="Search Specialist Content..." @bind-value="SearchTerm" @bind-value:event="oninput" @onkeydown="@CheckEnterKey">
-  <button class="btn btn-outline-secondary" type="button" @onclick="RedirectSearch">Search</button>
+  <input type="text" class="form-control" placeholder="Search Content..." @bind-value="SearchTerm" @bind-value:event="oninput" @onkeydown="@CheckEnterKey">
+  <button class="btn btn-search" type="button" @onclick="RedirectSearch">Search</button>
 </div>
 
 @code {    
@@ -13,11 +13,14 @@
     public string SearchTerm {get; set;}
 
     [Parameter]
+    public string Redirect {get; set;}
+
+    [Parameter]
     public EventCallback<string> OnSearchCallback { get; set; }
 
     private async Task RedirectSearch() {
         await OnSearchCallback.InvokeAsync(SearchTerm);
-        NavigationManager.NavigateTo("/ContentSearch/" + SearchTerm);
+        NavigationManager.NavigateTo("/"+Redirect+"/" + SearchTerm);
     } 
 
     public async void CheckEnterKey(KeyboardEventArgs e) {
