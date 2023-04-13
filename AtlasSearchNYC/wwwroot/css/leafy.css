@@ -1,0 +1,60 @@
+:root {
+    --specui-bg-primary: #00ED64;  
+    --specui-bg-secondary: #023430;
+    --specui-text-primary: #000000;
+    --specui-text-secondary: #ffffff;
+
+    --mdb-lavender: #F9EBFF;
+    --mdb-mist : #E3FCF7;
+    --mdb-springgreen : #00ED64;
+    --mdb-forestgreen : #00684A;
+    --mdb-evergreen : #023430;
+    --mdb-slateblue : #001E2B;
+    --mdb-white : #ffffff;
+    --mdb-black : #000000;
+    --mdb-grey: rgb(249, 251, 250);
+    --mdb-greyhover: #23637c;
+    --mdb-link: #016bf8;
+}
+
+html,body {
+    font-family: "Euclid Circular A", Akzidenz, "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.mdb-title {
+    font-family: 'MongoDB Value Serif';
+}
+
+h1,h2,h3 {
+    font-family: 'MongoDB Value Serif';
+}
+
+h1:focus {
+    outline: none;
+}
+
+a, .btn-link {
+    color: var(--mdb-link);
+}
+
+.content {
+    padding-top: 1.1rem;
+}
+
+.btn-primary { 
+    background-color: var(--mdb-evergreen);
+    border-color: var(--mdb-evergreen);
+    color: var(--mdb-white);
+    border-radius: 7px;
+}
+
+.btn-fullsize {
+    width: 100%;
+}
+
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary.active, .open>.dropdown-toggle.btn-primary {
+    color: var(--mdb-white);
+    background-color: var(--mdb-evergreen);
+    border-color: var(--mdb-springgreen);
+    border-width: 3px;
+}
