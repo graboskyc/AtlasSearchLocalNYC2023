@@ -1,0 +1,23 @@
+{
+    "analyzer": "lucene.english",
+    "searchAnalyzer": "lucene.english",
+    "mappings": {
+      "dynamic": false,
+      "fields": {
+        "fullplot": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "year": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "sortableNumberBetaV1"
+          }
+        ]
+      }
+    }
+  }

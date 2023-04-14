@@ -1,4 +1,5 @@
-@page "/Results03/{SearchTerm}"
+@page "/Results04/{SearchTerm}"
+@inject NavigationManager NavigationManager
 @using MongoDB.Bson;
 @using MongoDB.Driver;
 @using AtlasSearchNYC.Datamodels;
@@ -6,13 +7,12 @@
 
 <PageTitle>Content</PageTitle>
 
-
 <div class="row">
     <h1>Search Resuts (@movies.Count)</h1>
 </div>
 
 <div class="row">
-    <SearchBarBasic SearchTerm="@SearchTerm" Redirect="Results03"  OnSearchCallback="@ChangeSearchTerm" />
+    <SearchBarBasic SearchTerm="@SearchTerm" Redirect="Results04"  OnSearchCallback="@ChangeSearchTerm" />
 </div>
 
 <div class="row">
@@ -34,7 +34,7 @@
     @if(movies != null) {
         @foreach (var t in movies)
         {
-            <MovieTile SourceMovie=@t ShowSearchScore=true />
+            <MovieTile SourceMovie=@t ShowSearchScore=true ShowMLT=true ChangeSearchCallback="@ChangeSearchTerm" />
         }
     }
 </div>
@@ -43,16 +43,11 @@
 @code {
     [Parameter]
     public string SearchTerm {get; set;}
-    private List<Datamodels.Movie> movies = null;
+    private List<Datamodels.Movie> movies = new List<Movie>();
     private string SortBy = "Release Year";
 
     protected async void ChangeSort(ChangeEventArgs e) {
         SortBy = e.Value.ToString();
-        await RunSearch();
-    }
-
-    private async void ChangeSearchTerm(string term) {
-        SearchTerm = term;
         await RunSearch();
     }
 
@@ -62,8 +57,14 @@
 
     }
 
-    private async Task RunSearch() {
+    private async void ChangeSearchTerm(string term) {
+        Console.WriteLine("R04 - ChangeSearchTerm " + term);
+        SearchTerm = term;
+        NavigationManager.NavigateTo("/Results04/" + SearchTerm);
+        await RunSearch();
+    }
 
+    private async Task RunSearch() {
         var pipeline = new BsonDocument[] {
             new BsonDocument("$search", 
                 new BsonDocument

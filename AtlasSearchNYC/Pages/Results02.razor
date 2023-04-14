@@ -14,7 +14,7 @@
     @if(movies != null) {
         @foreach (var t in movies)
         {
-            <MovieTile M=@t />
+            <MovieTile SourceMovie=@t />
         }
     }
 </div>
@@ -39,17 +39,22 @@
     private async Task RunSearch() {
         var pipeline = new BsonDocument[] {
             new BsonDocument("$search", 
-            new BsonDocument("text", 
-            new BsonDocument
+                new BsonDocument
                     {
-                        { "query", SearchTerm }, 
-                        { "path", 
-            new BsonArray
+                        { "index", "sort" }, 
+                        { "text", 
+                new BsonDocument
                         {
-                            "fullplot",
-                            "title"
+                            { "query", SearchTerm }, 
+                            { "path", 
+                new BsonArray
+                            {
+                                "title",
+                                "fullplot"
+                            } }
                         } }
-                    }))
+                    }),
+            new BsonDocument("$limit", 25)
         };
 
         string MDBCONNSTR = Environment.GetEnvironmentVariable("MDBCONNSTR");

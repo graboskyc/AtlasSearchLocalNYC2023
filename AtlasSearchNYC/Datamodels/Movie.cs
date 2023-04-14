@@ -11,10 +11,16 @@ namespace AtlasSearchNYC.Datamodels
         public string Title { get; set; }
         [BsonElement("fullplot")]
         public string Plot { get; set; }
+        [BsonElement("poster")]
+        public string? PosterImageUrl { get; set; }
         [BsonElement("year")]
         public int? Year { get; set; }
+        [BsonElement("genres")]
+        public List<string> Genres { get; set; }
         
         [BsonElement("score")]
         public double? SearchScore { get; set; } = null;
+        [BsonElement("highlights")]
+        public List<Highlight> Highlights {get;set;} = new List<Highlight>();
     }
 }

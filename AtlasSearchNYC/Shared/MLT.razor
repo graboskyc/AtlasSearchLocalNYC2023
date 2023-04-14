@@ -1,0 +1,73 @@
+@using MongoDB.Bson;
+@using MongoDB.Driver;
+@using AtlasSearchNYC.Datamodels;
+@using System;
+
+@if(ShowButton) {
+    <button class="btn btn-success btn-lg" @onclick="RunSearch">Find More Like This</button>
+} else {
+    @if(similarMovies != null) {
+        @foreach (var t in similarMovies)
+        {
+            @if(t.PosterImageUrl != null) {
+                <img class="moviePoster" src="@t.PosterImageUrl" width="50px" @onclick=@(e => MovieClick(t.Title)) />
+            } else {
+                <div class="moviePoster"  @onclick=@(e => MovieClick(t.Title))>@t.Title</div>
+            }
+        }
+    } else if(similarMovies.Count == 0) {
+        <p>This is unique!</p>
+    } else {
+        <p>This is unique!</p>
+    }
+}
+
+
+@code {
+    [Parameter]
+    public Datamodels.Movie SourceMovie {get; set;}
+    [Parameter]
+    public EventCallback<string> OnMovieClickCallback { get; set; }
+
+    private List<Datamodels.Movie> similarMovies = null;
+
+    private bool ShowButton = true;
+
+
+    private async Task MovieClick(string title) {
+        Console.WriteLine("MLT - MovieClick " + title);
+        await OnMovieClickCallback.InvokeAsync(title);
+    } 
+
+    private async Task RunSearch() {
+        ShowButton = false;
+        var pipeline = new BsonDocument[] {
+            new BsonDocument("$search", 
+                new BsonDocument
+                    {
+                        { "index", "sort" }, 
+                        { "moreLikeThis", 
+                new BsonDocument("like", 
+                new BsonArray
+                            {
+                                new BsonDocument("title", SourceMovie.Title),
+                                new BsonDocument("genres", BsonArray.Create(SourceMovie.Genres.Select(g => g.ToString()))),
+                                new BsonDocument("fullPlot", SourceMovie.Plot)
+                            }) }
+                    }),
+            new BsonDocument("$limit", 4)
+        };
+
+        string MDBCONNSTR = Environment.GetEnvironmentVariable("MDBCONNSTR");
+        var settings = MongoClientSettings.FromConnectionString(MDBCONNSTR);
+        settings.ServerApi = new ServerApi(ServerApiVersion.V1);
+        var client = new MongoClient(settings);
+        var database = client.GetDatabase("sample_mflix");
+        var col = database.GetCollection<Datamodels.Movie>("movies"); 
+
+        var result = await col.Aggregate<Datamodels.Movie>(pipeline).ToListAsync();
+        result.RemoveAt(0); // pop first result which is itself
+        similarMovies = result;
+
+    }
+}

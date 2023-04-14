@@ -1,0 +1,21 @@
+[
+    {
+      "$search": {
+        "index": "sort",
+        "text": {
+          "query": "ghostbusters",
+          "path": ["title", "fullplot"]
+        },
+        "sortBetaV1": {
+          "year": -1
+        }
+      }
+    },
+    {
+      "$addFields": {
+        "score": {
+          "$meta": "searchScore"
+        }
+      }
+    }
+  ]

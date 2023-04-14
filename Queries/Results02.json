@@ -1,0 +1,11 @@
+[
+    {
+      "$search": {
+        "index":"sort",
+        "text": {
+          "query": "ghostbusters",
+          "path": ["title", "fullplot"]
+        }
+      }
+    }
+  ]

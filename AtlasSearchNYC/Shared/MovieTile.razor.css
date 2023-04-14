@@ -20,3 +20,7 @@
     bottom: 10px;
     position: absolute;
 }
+
+.highlight-hit {
+    background-color: var(--mdb-lavender);
+}

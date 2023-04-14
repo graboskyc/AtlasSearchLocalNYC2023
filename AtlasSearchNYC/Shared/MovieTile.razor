@@ -1,11 +1,31 @@
 <div class="card">
     <div class="card-body">
-        <h5 class="card-title">@M.Title (@M.Year)</h5>
-        <p class="card-text">@M.Plot</p>
+        <h5 class="card-title">@SourceMovie.Title (@SourceMovie.Year)</h5>
+
+        @if(SourceMovie.Highlights.Count == 0) {
+            <p class="card-text">@SourceMovie.Plot</p>
+        } else {
+            <p class="card-text">
+                @foreach(var h in SourceMovie.Highlights) {
+                    @foreach(var hightext in h.Texts) {
+                        @if(hightext.ReasonForSplit == "hit") {
+                            <span class="highlight-hit">@hightext.Section</span>
+                        } else {
+                            <span>@hightext.Section</span>
+                        }
+                    }
+                }
+            </p>
+        }
+
+        @if(ShowMLT) {
+            <MLT SourceMovie=@SourceMovie OnMovieClickCallback="@MovieClicked" />
+        }
+
         @if(ShowSearchScore) {
-            @if(M.SearchScore != null) {
+            @if(SourceMovie.SearchScore != null) {
                 <div class="card-footer text-muted">
-                    Score: @M.SearchScore
+                    Score: @SourceMovie.SearchScore
                 </div>
             }
         }
@@ -14,7 +34,17 @@
 
 @code {
     [Parameter]
-    public Datamodels.Movie M {get; set;}
+    public Datamodels.Movie SourceMovie {get; set;}
     [Parameter]
     public bool ShowSearchScore {get; set;} = false;
+    [Parameter]
+    public bool ShowMLT {get; set;} = false;
+
+    [Parameter]
+    public EventCallback<string> ChangeSearchCallback { get; set; }
+
+    private async void MovieClicked(string title) {        
+        Console.WriteLine("MT - MovieClick " + title);
+        await ChangeSearchCallback.InvokeAsync(title);
+    }
 }

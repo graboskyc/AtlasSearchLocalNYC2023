@@ -1,0 +1,34 @@
+[
+  {
+    $search:
+      {
+        index: "sort",
+        text: {
+          query: "ghostbusters",
+          path: ["title", "fullplot"],
+        },
+        sortBetaV1: {
+          year: -1,
+        },
+        highlight: {
+          path: ["fullplot", "title"],
+        },
+      },
+  },
+  {
+    $project:
+      {
+        title: 1,
+        fullplot: 1,
+        year: 1,
+        genres: 1,
+        poster: 1,
+        score: {
+          $meta: "searchScore",
+        },
+        highlights: {
+          $meta: "searchHighlights",
+        },
+      },
+  },
+]
