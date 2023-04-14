@@ -6,7 +6,7 @@
 
 <PageTitle>Content</PageTitle>
 
-<h1>Content Search Resuts</h1>
+<h1>Search Resuts (@movies.Count)</h1>
 
 <SearchBarBasic SearchTerm="@SearchTerm" Redirect="Results02"  OnSearchCallback="@ChangeSearchTerm" />
 
@@ -14,15 +14,7 @@
     @if(movies != null) {
         @foreach (var t in movies)
         {
-            <div class="card" style="width: 18rem;float:left;margin:10px;padding:20px">
-                <div class="card-body">
-                    <h5 class="card-title">@t.title</h5>
-                    <p class="card-text">@t.fullplot</p>
-                </div>
-                <div class="card-footer">
-                    @t._id
-                </div>
-            </div>
+            <MovieTile M=@t />
         }
     }
 </div>
@@ -31,7 +23,7 @@
 @code {
     [Parameter]
     public string SearchTerm {get; set;}
-    private List<Datamodels.Movie> movies = null;
+    private List<Datamodels.Movie> movies = new List<Movie>();
 
     private async void ChangeSearchTerm(string term) {
         SearchTerm = term;

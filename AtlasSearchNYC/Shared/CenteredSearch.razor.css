@@ -6,4 +6,8 @@
     width: 100vw;
     background: url(/BrandAssets/Wallpaper.png);
     background-size: cover;
-  }
+}
+
+.child {
+  width: 50vw;
+}

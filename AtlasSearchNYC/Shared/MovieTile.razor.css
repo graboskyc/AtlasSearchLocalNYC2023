@@ -1,0 +1,22 @@
+.card-title {
+    color: var(--mdb-link) !important;
+    font-family: 'MongoDB Value Serif' !important;
+    border-bottom: 1px solid var(--bs-gray-300)
+}
+
+.card {
+    border-radius: 2rem;
+    box-shadow: rgba(0, 30, 43, 0.1) 0px 4px 4px 0px;
+    width: 18rem;
+    float:left;
+    margin:10px;
+    padding:20px
+}
+
+
+.card-footer {
+    padding:0px !important;
+    background-color: var(--mdb-white) !important;
+    bottom: 10px;
+    position: absolute;
+}

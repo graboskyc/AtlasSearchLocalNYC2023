@@ -1,4 +1,4 @@
-@page "/Results01/{SearchTerm}"
+@page "/Results03/{SearchTerm}"
 @using MongoDB.Bson;
 @using MongoDB.Driver;
 @using AtlasSearchNYC.Datamodels;
@@ -6,15 +6,15 @@
 
 <PageTitle>Content</PageTitle>
 
-<h1>Search Resuts</h1>
+<h1>Search Resuts (@movies.Count)</h1>
 
-<SearchBarBasic SearchTerm="@SearchTerm" Redirect="Results01" OnSearchCallback="@ChangeSearchTerm" />
+<SearchBarBasic SearchTerm="@SearchTerm" Redirect="Results02"  OnSearchCallback="@ChangeSearchTerm" />
 
 <div class="row" style="margin-top:20px;">
     @if(movies != null) {
         @foreach (var t in movies)
         {
-            <MovieTile M=@t />
+            <MovieTile M=@t ShowSearchScore=true />
         }
     }
 </div>
@@ -38,10 +38,25 @@
 
     private async Task RunSearch() {
         var pipeline = new BsonDocument[] {
-            new BsonDocument("$match", 
-                new BsonDocument("_id", 
-                new ObjectId(SearchTerm))
-            )
+            new BsonDocument("$search", 
+            new BsonDocument
+                {
+                    { "index", "default" }, 
+                    { "text", 
+            new BsonDocument
+                    {
+                        { "query", SearchTerm }, 
+                        { "path", 
+            new BsonArray
+                        {
+                            "fullplot",
+                            "title"
+                        } }
+                    } }
+                }),
+            new BsonDocument("$addFields", 
+            new BsonDocument("score", 
+            new BsonDocument("$meta", "searchScore")))
         };
 
         string MDBCONNSTR = Environment.GetEnvironmentVariable("MDBCONNSTR");

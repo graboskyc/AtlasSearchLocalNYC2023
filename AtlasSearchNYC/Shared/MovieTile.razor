@@ -1,0 +1,20 @@
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">@M.Title (@M.Year)</h5>
+        <p class="card-text">@M.Plot</p>
+        @if(ShowSearchScore) {
+            @if(M.SearchScore != null) {
+                <div class="card-footer text-muted">
+                    Score: @M.SearchScore
+                </div>
+            }
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public Datamodels.Movie M {get; set;}
+    [Parameter]
+    public bool ShowSearchScore {get; set;} = false;
+}

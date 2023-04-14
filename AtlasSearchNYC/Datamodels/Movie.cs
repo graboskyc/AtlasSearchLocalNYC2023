@@ -5,9 +5,16 @@ using MongoDB.Bson.Serialization.Attributes;
 namespace AtlasSearchNYC.Datamodels
 {
     [BsonIgnoreExtraElements]
-    class Movie {
+    public class Movie {
         public ObjectId _id {get;set;}
-        public string title { get; set; }
-        public string fullplot { get; set; }
+        [BsonElement("title")]
+        public string Title { get; set; }
+        [BsonElement("fullplot")]
+        public string Plot { get; set; }
+        [BsonElement("year")]
+        public int? Year { get; set; }
+        
+        [BsonElement("score")]
+        public double? SearchScore { get; set; } = null;
     }
 }

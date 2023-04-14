@@ -1,11 +1,8 @@
 @inject NavigationManager NavigationManager
 
 <div class="input-group input-group-lg">
-  <span class="input-group-text">
-    <img src='/BrandAssets/Icons/Technical_ATLAS_Search10x.png' width="50" />
-  </span>
   <input type="text" class="form-control" placeholder="Search Content..." @bind-value="SearchTerm" @bind-value:event="oninput" @onkeydown="@CheckEnterKey">
-  <button class="btn btn-search" type="button" @onclick="RedirectSearch">Search</button>
+  <img src='/BrandAssets/Icons/Technical_ATLAS_Search10x.png' width="50" class="btn btn-search" @onclick="RedirectSearch" />
 </div>
 
 @code {    
