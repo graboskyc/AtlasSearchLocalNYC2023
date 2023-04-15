@@ -66,3 +66,13 @@ a, .btn-link {
 .row {
     margin-top:1rem !important;
 }
+
+.sortbox {
+    background-image: url(/BrandAssets/Icons/Technical_MDB_FiltersAndFacets10x.png) !important; 
+    background-size: 32px; 
+    width:12rem !important;
+    border-radius: 50px;
+    background-color:  var(--mdb-white);  
+    border-color: var(--mdb-evergreen);
+    border-width: 3px;
+}
