@@ -1,0 +1,135 @@
+@inject NavigationManager NavigationManager
+@using AtlasSearchNYC.Datamodels;
+@using MongoDB.Bson;
+@using MongoDB.Bson.IO;
+@using MongoDB.Driver;
+
+<div class="input-group input-group-lg">
+  <input type="text" 
+      class="form-control" 
+      placeholder="Search Content..." 
+      @bind-value="SearchTerm" 
+      @bind-value:event="oninput" 
+      @onkeydown="@CheckEnterKey">
+  <img src='/BrandAssets/Icons/Technical_ATLAS_Search10x.png' 
+      width="50" class="btn btn-search" 
+      @onclick="() => RedirectSearch()" />
+</div>
+
+@if (suggestions is not null && ShowSuggestions)
+  {
+      <ul class="options" @onclick=ToggleSuggestions>
+          @if (suggestions.Any())
+          {
+              @foreach (var s in suggestions.Take(5))
+              {
+                  <li class="option input-group" @onclick="() => RedirectSearch(s.Title)">
+                    <span class="option-text">@s.Title</span>
+                  </li>                    
+              }
+          }
+          <li class="option input-group" @onclick="() => RedirectSearch()" >
+              See Full Results for "@SearchTerm"
+          </li>
+      </ul>
+  }
+
+
+
+@code {
+    private string  _searchTerm;
+    private List<Datamodels.Movie> suggestions;
+
+    [Parameter]
+    public string SearchTerm
+    {
+      get => _searchTerm;
+      set
+      {
+        _searchTerm = value;
+        if(_searchTerm?.Length > 0)
+        {
+          GetSuggestions();
+        }
+      }
+    }
+
+    [Parameter]
+    public string Redirect {get; set;}
+
+    [Parameter]
+    public EventCallback<string> OnSearchCallback { get; set; }
+
+    [Parameter]
+    public bool ShowSuggestions {get;set;} = false;
+
+     private async Task RedirectSearch(string? newTerm = null) {
+        if(newTerm != null) {
+          SearchTerm = newTerm;
+        }
+        await OnSearchCallback.InvokeAsync(SearchTerm);
+        NavigationManager.NavigateTo("/"+Redirect+"/" + SearchTerm);
+    } 
+
+    public async void CheckEnterKey(KeyboardEventArgs e) {
+      if (e.Code == "Enter" || e.Code == "NumpadEnter") {
+        await  RedirectSearch();
+      }
+    }
+
+    private void ToggleSuggestions()
+    {
+      ShowSuggestions = !ShowSuggestions;
+    }
+
+    private async Task GetSuggestions() {
+      var pipeline = new BsonDocument[]{
+        new BsonDocument("$search",
+          new BsonDocument
+          {
+              {"index", "autocomplete"},
+              {
+                  "compound",
+                  new BsonDocument("should",
+                      new BsonArray
+                      {
+                          new BsonDocument("autocomplete", 
+                          new BsonDocument
+                                  {
+                                      { "query", SearchTerm }, 
+                                      { "path", "title"}
+                                  }),
+                          new BsonDocument("autocomplete", 
+                          new BsonDocument
+                                  {
+                                      { "query", SearchTerm }, 
+                                      { "path", "fullplot"}
+                                  })
+                      }
+                  )
+              }
+          }
+        ),
+          new BsonDocument("$limit", 10)
+      };
+
+      string MDBCONNSTR = Environment.GetEnvironmentVariable("MDBCONNSTR");
+      var settings = MongoClientSettings.FromConnectionString(MDBCONNSTR);
+      settings.ServerApi = new ServerApi(ServerApiVersion.V1);
+      var client = new MongoClient(settings);
+      var database = client.GetDatabase("sample_mflix");
+      var col = database.GetCollection<Datamodels.Movie>("movies"); 
+
+      var result = await col.Aggregate<Movie>(pipeline).ToListAsync();
+      suggestions = result;
+
+      if(suggestions.Count > 0)
+      {
+        ShowSuggestions = true;
+      }
+      else
+      {
+        ShowSuggestions = false;
+      }
+    }
+}

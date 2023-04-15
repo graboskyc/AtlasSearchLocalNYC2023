@@ -1,0 +1,166 @@
+@page "/Results05/{SearchTerm}"
+@page "/Results05"
+@inject NavigationManager NavigationManager
+@using MongoDB.Bson;
+@using MongoDB.Driver;
+@using AtlasSearchNYC.Datamodels;
+@using System;
+
+<PageTitle>Content</PageTitle>
+
+<div class="row">
+    <h1>Search Results (@movies.Count)</h1>
+</div>
+
+<div class="row">
+    <div class="col-auto">
+        <h2><label for="ddl" class="form-label">Sort By</label></h2>
+    </div>
+
+    <div class="col-auto">
+        <div class="input-group">
+            <select class="form-select form-select-lg sortbox" id="ddl" @onchange=ChangeSort>
+                <option>Score</option>
+                <option>Release Year</option>                
+            </select>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <SearchBarAutocomplete SearchTerm="@SearchTerm" Redirect="Results05"  OnSearchCallback="@ChangeSearchTerm" ShowSuggestions=false />
+</div>
+
+<div class="row" style="margin-top:20px;">
+    @if(movies != null) {
+        @foreach (var t in movies)
+        {
+            <MovieTile SourceMovie=@t ShowSearchScore=true ShowMLT=true ChangeSearchCallback="@ChangeSearchTerm" />
+        }
+    }
+</div>
+
+
+@code {
+    [Parameter]
+    public string SearchTerm {get; set;} = null;
+    private List<Datamodels.Movie> movies = new List<Movie>();
+    private string SortBy = "Score";
+
+    protected async void ChangeSort(ChangeEventArgs e) {
+        SortBy = e.Value.ToString();
+        await RunSearch();
+    }
+
+    protected override async Task OnInitializedAsync()
+    { 
+        if(SearchTerm != null) {
+            await RunSearch();
+        }
+
+    }
+
+    private async void ChangeSearchTerm(string term) {
+        Console.WriteLine("R04 - ChangeSearchTerm " + term);
+        SearchTerm = term;
+        NavigationManager.NavigateTo("/Results04/" + SearchTerm);
+        await RunSearch();
+    }
+
+    private async Task RunSearch() {
+        var pipeline = new BsonDocument[] {
+            new BsonDocument("$search", 
+                new BsonDocument
+                    {
+                        { "index", "sort" }, 
+                        { "text", 
+                new BsonDocument
+                        {
+                            { "query", SearchTerm }, 
+                            { "path", 
+                new BsonArray
+                            {
+                                "title",
+                                "fullplot"
+                            } }
+                        } }, 
+                        { "sortBetaV1", 
+                new BsonDocument("year", -1) }, 
+                        { "highlight", 
+                new BsonDocument("path", 
+                new BsonArray
+                            {
+                                "fullplot",
+                                "title"
+                            }) }
+                    }),
+                new BsonDocument("$project", 
+                new BsonDocument
+                    {
+                        { "title", 1 }, 
+                        { "fullplot", 1 }, 
+                        { "year", 1 }, 
+                        { "genres", 1 }, 
+                        { "poster", 1 }, 
+                        { "score", 
+                new BsonDocument("$meta", "searchScore") }, 
+                        { "highlights", 
+                new BsonDocument("$meta", "searchHighlights") }
+                    }),
+            new BsonDocument("$limit", 25)
+        };
+        
+        @if(SortBy == "Score") {
+             pipeline = new BsonDocument[] {
+                new BsonDocument("$search", 
+                    new BsonDocument
+                        {
+                            { "index", "sort" }, 
+                            { "text", 
+                    new BsonDocument
+                            {
+                                { "query", SearchTerm }, 
+                                { "path", 
+                    new BsonArray
+                                {
+                                    "title",
+                                    "fullplot"
+                                } }
+                            } }, 
+                            { "highlight", 
+                    new BsonDocument("path", 
+                    new BsonArray
+                                {
+                                    "fullplot",
+                                    "title"
+                                }) }
+                        }),
+                    new BsonDocument("$project", 
+                    new BsonDocument
+                        {
+                            { "title", 1 }, 
+                            { "fullplot", 1 }, 
+                            { "year", 1 }, 
+                            { "genres", 1 }, 
+                            { "poster", 1 }, 
+                            { "score", 
+                    new BsonDocument("$meta", "searchScore") }, 
+                            { "highlights", 
+                    new BsonDocument("$meta", "searchHighlights") }
+                        }),
+            new BsonDocument("$limit", 25)
+            };
+        }
+
+        string MDBCONNSTR = Environment.GetEnvironmentVariable("MDBCONNSTR");
+        var settings = MongoClientSettings.FromConnectionString(MDBCONNSTR);
+        settings.ServerApi = new ServerApi(ServerApiVersion.V1);
+        var client = new MongoClient(settings);
+        var database = client.GetDatabase("sample_mflix");
+        var col = database.GetCollection<Datamodels.Movie>("movies"); 
+
+        var result = await col.Aggregate<Datamodels.Movie>(pipeline).ToListAsync();
+        movies = result;
+
+    }
+}
