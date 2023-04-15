@@ -34,4 +34,4 @@ See source code in [Results05](AtlasSearchNYC/Pages/Results05.razor) and [Search
 
 See source code in [Results06](AtlasSearchNYC/Pages/Results06.razor) and its [facet index definition](Indexes/facets.json)
 
-![](Screenshots/05.gif)
+![](Screenshots/06.gif)
