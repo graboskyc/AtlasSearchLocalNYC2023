@@ -1,0 +1,38 @@
+@inject NavigationManager NavigationManager
+
+<div class="input-group input-group-lg">
+  <input type="text" class="form-control" placeholder="Search Content..." @bind-value="SearchTerm" @bind-value:event="oninput" @onkeydown="@KeyPressed">
+  <img src='/BrandAssets/Icons/Technical_ATLAS_Search10x.png' width="50" class="btn btn-search" @onclick="RedirectSearch" />
+</div>
+
+@code {    
+    [Parameter]
+    public string JokeTerm {get; set;}
+
+    [Parameter]
+    public string Redirect {get; set;}
+
+    private string SearchTerm {get; set;} = "";
+
+    [Parameter]
+    public EventCallback<string> OnSearchCallback { get; set; }
+
+    private int currentLength = 0;
+
+    private async Task RedirectSearch() {
+        await OnSearchCallback.InvokeAsync(JokeTerm);
+        NavigationManager.NavigateTo("/"+Redirect+"/" + JokeTerm);
+    } 
+
+    public async void KeyPressed(KeyboardEventArgs e) {
+      if (e.Code == "Enter" || e.Code == "NumpadEnter") {
+        await  RedirectSearch();
+      } else {
+        currentLength++;
+        if(currentLength > JokeTerm.Length) {
+          currentLength = JokeTerm.Length;
+        }
+        SearchTerm = JokeTerm.Substring(0, currentLength);
+      }
+    }
+}
