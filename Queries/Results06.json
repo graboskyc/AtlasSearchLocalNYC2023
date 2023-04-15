@@ -1,0 +1,34 @@
+[
+  {
+    $searchMeta: {
+      index: "facets",
+      facet: {
+        operator: {
+          text: {
+            path: ["fullplot", "title"],
+            query: "ghostbusters",
+          },
+        },
+        facets: {
+          genresFacet: {
+            type: "string",
+            path: "genres",
+          },
+          castFacet: {
+            type: "string",
+            path: "cast",
+          },
+        },
+      },
+    },
+  },
+  {
+    $project:
+      {
+        genresFacetBuckets:
+          "$facet.genresFacet.buckets",
+        castFacetBuckets:
+          "$facet.castFacet.buckets",
+      },
+  },
+]

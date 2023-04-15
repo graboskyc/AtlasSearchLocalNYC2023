@@ -29,3 +29,9 @@ See source code in [Results04](AtlasSearchNYC/Pages/Results04.razor) and its [so
 See source code in [Results05](AtlasSearchNYC/Pages/Results05.razor) and [SearchBarAutocomplete](AtlasSearchNYC/Shared/SearchBarAutocomplete.razor) and its [autocomplete index definition](Indexes/autocomplete.json)
 
 ![](Screenshots/05.gif)
+
+## Facets
+
+See source code in [Results06](AtlasSearchNYC/Pages/Results06.razor) and its [facet index definition](Indexes/facets.json)
+
+![](Screenshots/05.gif)

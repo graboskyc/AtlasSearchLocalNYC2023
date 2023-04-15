@@ -4,7 +4,7 @@
 @using System;
 
 @if(ShowButton) {
-    <button class="btn btn-success btn-lg" @onclick="RunSearch">Find More Like This</button>
+    <center><button class="btn btn-leafy btn-sm" @onclick="RunSearch">Find More Like This</button></center>
 } else {
     @if(similarMovies != null) {
         @foreach (var t in similarMovies)

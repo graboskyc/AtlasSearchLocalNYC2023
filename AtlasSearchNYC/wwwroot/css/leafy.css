@@ -58,3 +58,16 @@ a, .btn-link {
     border-color: var(--mdb-springgreen);
     border-width: 3px;
 }
+
+.btn-leafy {
+    background-color: var(--mdb-springgreen);
+    color: var(--mdb-slateblue);
+    border-color: var(--mdb-slateblue);
+    border-width: 1px;
+    border-radius: 4px;
+    transition: border-radius .15s;
+}
+
+.btn-leafy:hover {
+    border-radius: 50px;
+}
