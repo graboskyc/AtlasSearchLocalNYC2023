@@ -31,6 +31,17 @@
 
     private bool ShowButton = true;
 
+    protected override async Task OnInitializedAsync()
+    { 
+        ShowButton = true;
+    }
+
+    protected override void OnParametersSet()
+    {
+        // movie input changed
+        ShowButton = true;
+    }
+
 
     private async Task MovieClick(string title) {
         Console.WriteLine("MLT - MovieClick " + title);
