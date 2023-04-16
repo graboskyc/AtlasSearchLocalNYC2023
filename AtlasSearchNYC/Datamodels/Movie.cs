@@ -14,9 +14,11 @@ namespace AtlasSearchNYC.Datamodels
         [BsonElement("poster")]
         public string? PosterImageUrl { get; set; }
         [BsonElement("year")]
-        public int? Year { get; set; }
+        public dynamic Year { get; set; }
         [BsonElement("genres")]
         public List<string> Genres { get; set; }
+        [BsonElement("cast")]
+        public List<string> Cast { get; set; }
         
         [BsonElement("score")]
         public double? SearchScore { get; set; } = null;

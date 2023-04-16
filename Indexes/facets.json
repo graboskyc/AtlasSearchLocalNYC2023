@@ -1,31 +1,49 @@
 {
-    "analyzer": "lucene.english",
-    "searchAnalyzer": "lucene.english",
-    "mappings": {
-      "dynamic": false,
-      "fields": {
-        "fullplot": [
-            {"type": "string"},
-            {"type": "autocomplete"}
-        ],
-        "title": [
-          {"type": "string"},
-          {"type": "autocomplete"}
-        ],
-        "year": [
-          {
-            "type": "number"
-          },
-          {
-            "type": "sortableNumberBetaV1"
-          }
-        ],
-        "genres": {
-          "type": "stringFacet"
+  "analyzer": "lucene.english",
+  "searchAnalyzer": "lucene.english",
+  "mappings": {
+    "dynamic": false,
+    "fields": {
+      "cast": [
+        {
+          "type": "string"
         },
-        "cast": {
+        {
           "type": "stringFacet"
         }
-      }
+      ],
+      "fullplot": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "autocomplete"
+        }
+      ],
+      "genres": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "stringFacet"
+        }
+      ],
+      "title": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "autocomplete"
+        }
+      ],
+      "year": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "sortableNumberBetaV1"
+        }
+      ]
     }
   }
+}
