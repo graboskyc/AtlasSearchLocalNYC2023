@@ -15,8 +15,6 @@
                 <div class="moviePoster"  @onclick=@(e => MovieClick(t.Title))>@t.Title</div>
             }
         }
-    } else if(similarMovies.Count == 0) {
-        <p>This is unique!</p>
     } else {
         <p>This is unique!</p>
     }
@@ -37,27 +35,11 @@
     private async Task MovieClick(string title) {
         Console.WriteLine("MLT - MovieClick " + title);
         await OnMovieClickCallback.InvokeAsync(title);
+        StateHasChanged();
     } 
 
     private async Task RunSearch() {
         ShowButton = false;
-        var pipeline = new BsonDocument[] {
-            new BsonDocument("$search", 
-                new BsonDocument
-                    {
-                        { "index", "sort" }, 
-                        { "moreLikeThis", 
-                new BsonDocument("like", 
-                new BsonArray
-                            {
-                                new BsonDocument("title", SourceMovie.Title),
-                                new BsonDocument("genres", BsonArray.Create(SourceMovie.Genres.Select(g => g.ToString()))),
-                                new BsonDocument("cast", BsonArray.Create(SourceMovie.Cast.Select(c => c.ToString()))),
-                                new BsonDocument("fullPlot", SourceMovie.Plot)
-                            }) }
-                    }),
-            new BsonDocument("$limit", 4)
-        };
 
         string MDBCONNSTR = Environment.GetEnvironmentVariable("MDBCONNSTR");
         var settings = MongoClientSettings.FromConnectionString(MDBCONNSTR);
@@ -66,7 +48,12 @@
         var database = client.GetDatabase("sample_mflix");
         var col = database.GetCollection<Datamodels.Movie>("movies"); 
 
-        var result = await col.Aggregate<Datamodels.Movie>(pipeline).ToListAsync();
+        var result = await col.Aggregate()
+            .Search(Builders<Datamodels.Movie>.Search.MoreLikeThis(SourceMovie))
+            .Limit(5)
+            .ToListAsync();
+
+        //var result = await col.Aggregate<Datamodels.Movie>(pipeline).ToListAsync();
         result.RemoveAt(0); // pop first result which is itself
         similarMovies = result;
 
