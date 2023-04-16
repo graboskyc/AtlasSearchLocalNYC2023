@@ -52,6 +52,7 @@
                             {
                                 new BsonDocument("title", SourceMovie.Title),
                                 new BsonDocument("genres", BsonArray.Create(SourceMovie.Genres.Select(g => g.ToString()))),
+                                new BsonDocument("cast", BsonArray.Create(SourceMovie.Cast.Select(c => c.ToString()))),
                                 new BsonDocument("fullPlot", SourceMovie.Plot)
                             }) }
                     }),
