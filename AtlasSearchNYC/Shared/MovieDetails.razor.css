@@ -1,0 +1,7 @@
+.bg-leafy {
+    background-color: var(--mdb-springgreen);
+}
+
+td,th {
+    padding:10px !important;
+}

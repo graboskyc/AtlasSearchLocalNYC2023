@@ -76,7 +76,8 @@
                         { "text", 
                 new BsonDocument
                         {
-                            { "query", SearchTerm }, 
+                            { "query", SearchTerm },                             
+                            { "fuzzy", new BsonDocument() }, 
                             { "path", 
                 new BsonArray
                             {
@@ -119,7 +120,8 @@
                             { "text", 
                     new BsonDocument
                             {
-                                { "query", SearchTerm }, 
+                                { "query", SearchTerm },                                 
+                                { "fuzzy", new BsonDocument() }, 
                                 { "path", 
                     new BsonArray
                                 {

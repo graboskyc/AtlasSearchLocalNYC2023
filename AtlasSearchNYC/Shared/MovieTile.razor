@@ -1,3 +1,5 @@
+@using MongoDB.Bson;
+
 <div class="card">
     <div class="card-body">
         <h5 class="card-title">@SourceMovie.Title (@SourceMovie.Year)</h5>
@@ -29,6 +31,10 @@
                 </div>
             }
         }
+
+        @if(ShowMovieDetails) {
+            <center><button class="btn btn-leafy btn-sm" @onclick="LearnMoreClicked">Learn More</button></center>
+        }
     </div>
 </div>
 
@@ -39,12 +45,20 @@
     public bool ShowSearchScore {get; set;} = false;
     [Parameter]
     public bool ShowMLT {get; set;} = false;
+    [Parameter]
+    public bool ShowMovieDetails {get; set;} = false;
 
     [Parameter]
     public EventCallback<string> ChangeSearchCallback { get; set; }
+    [Parameter]
+    public EventCallback<ObjectId> LearnMoreCallback { get; set; }
 
     private async void MovieClicked(string title) {        
         Console.WriteLine("MT - MovieClick " + title);
         await ChangeSearchCallback.InvokeAsync(title);
+    }
+
+    private async void LearnMoreClicked() {        
+        await LearnMoreCallback.InvokeAsync(SourceMovie._id);
     }
 }

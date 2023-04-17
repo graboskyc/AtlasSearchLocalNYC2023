@@ -1,0 +1,68 @@
+@using MongoDB.Bson;
+@using MongoDB.Driver;
+@using AtlasSearchNYC.Datamodels;
+@using System;
+
+@if(_M != null) {
+    <h1>@_M.Title</h1>
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <tr>
+                <th class="bg-leafy">Year</th>
+                <td>@_M.Year</td>
+            </tr>
+            <tr>
+                <th class="bg-leafy">Poster</th>
+                <td><img src="@_M.PosterImageUrl" height="200" /></td>
+            </tr>
+            <tr>
+                <th class="bg-leafy">Plot</th>
+                <td>@_M.FullPlot</td>
+            </tr>
+            <tr>
+                <th class="bg-leafy">Genres</th>
+                <td>
+                    <ul>
+                        @foreach(var g in @_M.Genres) {
+                            <li>@g</li>
+                        }
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <th class="bg-leafy">Cast</th>
+                <td>
+                    <ul>
+                        @foreach(var a in @_M.Cast) {
+                            <li>@a</li>
+                        }
+                    </ul>
+                </td>
+            </tr>
+        </table>
+    </div>
+}
+
+
+@code {
+    [Parameter]
+    public ObjectId SourceMovieId {get; set;}
+    [Parameter]
+    public EventCallback<string> OnMovieClickCallback { get; set; }
+
+    private Datamodels.FullMovie _M {get;set;} = null;
+
+
+    protected override async Task OnInitializedAsync()
+    { 
+        string MDBCONNSTR = Environment.GetEnvironmentVariable("MDBCONNSTR");
+        var settings = MongoClientSettings.FromConnectionString(MDBCONNSTR);
+        settings.ServerApi = new ServerApi(ServerApiVersion.V1);
+        var client = new MongoClient(settings);
+        var database = client.GetDatabase("sample_mflix");
+        var col = database.GetCollection<Datamodels.FullMovie>("movies"); 
+
+        var filter = Builders<FullMovie>.Filter.Eq("_id", SourceMovieId);
+        _M = await col.Find(filter).FirstOrDefaultAsync();
+    }
+}

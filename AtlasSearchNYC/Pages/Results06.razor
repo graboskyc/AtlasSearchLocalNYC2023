@@ -65,10 +65,26 @@
     @if(movies != null) {
         @foreach (var t in movies)
         {
-            <MovieTile SourceMovie=@t ShowSearchScore=true ShowMLT=true ChangeSearchCallback="@ChangeSearchTerm" />
+            <MovieTile SourceMovie=@t ShowSearchScore=true ShowMLT=true ChangeSearchCallback="@ChangeSearchTerm" ShowMovieDetails=true LearnMoreCallback="@OpenMovieModal" />
         }
     }
 </div>
+
+@if(ShowModal) {
+<div class="modal" tabindex="-1" style="display:block;top:5vh;">
+  <div class="modal-dialog">
+    <div class="modal-content" style="border-radius: 2rem; box-shadow:  29px 29px 57px #636363,             -29px -29px 57px #ffffff; ">
+      <div class="modal-header">
+        <h5 class="modal-title">Movie Details</h5>
+        <button type="button" class="btn-close" @onclick=ToggleModal ></button>
+      </div>
+      <div class="modal-body">
+        <MovieDetails SourceMovieId=SelectedMovieId />
+      </div>
+    </div>
+  </div>
+</div>
+}
 
 
 @code {
@@ -80,6 +96,13 @@
     
     private string[] SelectedGenres { get; set; } = new string[] { };
     private string[] SelectedCast { get; set; } = new string[] { };
+
+    private ObjectId SelectedMovieId;
+    private bool ShowModal = false;
+
+    private void ToggleModal() {
+        ShowModal = !ShowModal;
+    }
 
     protected async void ChangeSort(ChangeEventArgs e) {
         SortBy = e.Value.ToString();
@@ -103,11 +126,18 @@
     }
 
     private async void ChangeSearchTerm(string term) {
-        Console.WriteLine("R04 - ChangeSearchTerm " + term);
+        Console.WriteLine("R06 - ChangeSearchTerm " + term);
         SearchTerm = term;
         NavigationManager.NavigateTo("/Results06/" + SearchTerm);
         await RunSearch();        
         await RunFacets();
+    }
+
+    private async void OpenMovieModal(ObjectId id) {
+        Console.WriteLine("R06 - Open Modal");
+        SelectedMovieId = id;
+        ShowModal = true;
+        StateHasChanged();
     }
 
     private async Task RunSearch() {
@@ -119,6 +149,7 @@
 
         var basicSearch = new BsonDocument("text",  new BsonDocument {
                 { "query", SearchTerm }, 
+                { "fuzzy", new BsonDocument() }, 
                 { "path", 
                     new BsonArray {
                         "title",
