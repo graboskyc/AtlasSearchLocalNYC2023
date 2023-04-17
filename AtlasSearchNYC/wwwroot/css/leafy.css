@@ -60,7 +60,7 @@ a, .btn-link {
 }
 
 .btn-leafy {
-    background-color: var(--mdb-springgreen);
+    background-color: var(--mdb-springgreen) !important;
     color: var(--mdb-slateblue);
     border-color: var(--mdb-slateblue);
     border-width: 1px;

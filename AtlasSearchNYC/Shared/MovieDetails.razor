@@ -32,11 +32,19 @@
             <tr>
                 <th class="bg-leafy">Cast</th>
                 <td>
-                    <ul>
-                        @foreach(var a in @_M.Cast) {
-                            <li>@a</li>
-                        }
-                    </ul>
+                    @foreach(var a in @_M.Cast) {
+                        <button class="btn btn-sm btn-leafy" @onclick="@(e => GetCommonCast(a))">@a</button>
+                    }
+                    @if(_F != null) {
+                        <p>If you like @_F.Cast[0].Key you may also like: </p>
+                        <ul>
+                            @foreach(var fb in _F.Cast) {
+                                @if(_F.Cast[0].Key != fb.Key) {
+                                    <li>@fb.Key (@fb.Count)</li>
+                                }
+                            }
+                        </ul>
+                    }
                 </td>
             </tr>
         </table>
@@ -52,6 +60,8 @@
 
     private Datamodels.FullMovie _M {get;set;} = null;
 
+    private Datamodels.FacetResponse _F {get;set;} = null;
+
 
     protected override async Task OnInitializedAsync()
     { 
@@ -64,5 +74,47 @@
 
         var filter = Builders<FullMovie>.Filter.Eq("_id", SourceMovieId);
         _M = await col.Find(filter).FirstOrDefaultAsync();
+    }
+
+    private async Task GetCommonCast(string actor) {
+
+        var pipeline = new BsonDocument[] {
+            new BsonDocument("$searchMeta", 
+            new BsonDocument
+                {
+                    { "index", "facets" }, 
+                    { "facet", 
+            new BsonDocument
+                    {
+                        { "operator", 
+            new BsonDocument("phrase", 
+            new BsonDocument
+                            {
+                                { "path", "cast" }, 
+                                { "query", actor }
+                            }) }, 
+                        { "facets", 
+            new BsonDocument("castFacet", 
+            new BsonDocument
+                            {
+                                { "type", "string" }, 
+                                { "path", "cast" }
+                            }) }
+                    } }
+                }),
+            new BsonDocument("$project", 
+            new BsonDocument("castFacetBuckets", "$facet.castFacet.buckets"))
+        };
+        
+        string MDBCONNSTR = Environment.GetEnvironmentVariable("MDBCONNSTR");
+        var settings = MongoClientSettings.FromConnectionString(MDBCONNSTR);
+        settings.ServerApi = new ServerApi(ServerApiVersion.V1);
+        var client = new MongoClient(settings);
+        var database = client.GetDatabase("sample_mflix");
+        var col = database.GetCollection<Datamodels.FacetResponse>("movies"); 
+
+        var result = await col.Aggregate<Datamodels.FacetResponse>(pipeline).ToListAsync();
+        _F = result[0];       
+
     }
 }
