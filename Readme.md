@@ -40,4 +40,4 @@ See source code in [Results06](AtlasSearchNYC/Pages/Results06.razor) and its [fa
 
 See source code in [Results06](AtlasSearchNYC/Pages/Results06.razor) and [MovieDetails](AtlasSearchNYC/Shared/MovieDetails.razor) and its [facet index definition](Indexes/facets.json)
 
-![](Screenshots/08.gif)
+![](Screenshots/07.gif)
