@@ -71,19 +71,21 @@
 </div>
 
 @if(ShowModal) {
-<div class="modal" tabindex="-1" style="display:block;top:5vh;">
-  <div class="modal-dialog">
-    <div class="modal-content" style="border-radius: 2rem; box-shadow:  29px 29px 57px #636363,             -29px -29px 57px #ffffff; ">
-      <div class="modal-header">
-        <h5 class="modal-title">Movie Details</h5>
-        <button type="button" class="btn-close" @onclick=ToggleModal ></button>
-      </div>
-      <div class="modal-body">
-        <MovieDetails SourceMovieId=SelectedMovieId />
-      </div>
+    <div class="ctr-bg-blurer"></div>
+
+    <div class="modal" tabindex="-1" id="ctr_modal">
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Movie Details</h5>
+            <button type="button" class="btn-close" @onclick=ToggleModal ></button>
+        </div>
+        <div class="modal-body">
+            <MovieDetails SourceMovieId=SelectedMovieId />
+        </div>
+        </div>
     </div>
-  </div>
-</div>
+    </div>
 }
 
 
