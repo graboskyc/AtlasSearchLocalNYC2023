@@ -1,6 +1,7 @@
 @page "/Results02/{SearchTerm}"
 @using MongoDB.Bson;
 @using MongoDB.Driver;
+@using MongoDB.Driver.Search;
 @using AtlasSearchNYC.Datamodels;
 @using System;
 
@@ -37,34 +38,22 @@
     }
 
     private async Task RunSearch() {
-        var pipeline = new BsonDocument[] {
-            new BsonDocument("$search", 
-                new BsonDocument
-                    {
-                        { "index", "sort" }, 
-                        { "text", 
-                new BsonDocument
-                        {
-                            { "query", SearchTerm }, 
-                            { "path", 
-                new BsonArray
-                            {
-                                "title",
-                                "fullplot"
-                            } }
-                        } }
-                    }),
-            new BsonDocument("$limit", 25)
-        };
 
         string MDBCONNSTR = Environment.GetEnvironmentVariable("MDBCONNSTR");
         var settings = MongoClientSettings.FromConnectionString(MDBCONNSTR);
         settings.ServerApi = new ServerApi(ServerApiVersion.V1);
         var client = new MongoClient(settings);
         var database = client.GetDatabase("sample_mflix");
-        var col = database.GetCollection<Datamodels.Movie>("movies"); 
+        var col = database.GetCollection<Datamodels.Movie>("movies");
+        
+        var result = await col.Aggregate()
+            .Search(Builders<Datamodels.Movie>.Search
+                .Text(Builders<Datamodels.Movie>.SearchPath.Multi("title", "fullplot"), SearchTerm),
+                indexName: "sort"
+            )
+            .Limit(25)
+            .ToListAsync();
 
-        var result = await col.Aggregate<Datamodels.Movie>(pipeline).ToListAsync();
         movies = result;
 
     }
