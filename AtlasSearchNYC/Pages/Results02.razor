@@ -49,7 +49,7 @@
         var result = await col.Aggregate()
             .Search(Builders<Datamodels.Movie>.Search
                 .Text(Builders<Datamodels.Movie>.SearchPath.Multi("title", "fullplot"), SearchTerm),
-                indexName: "sort"
+            indexName: "sort"
             )
             .Limit(25)
             .ToListAsync();
