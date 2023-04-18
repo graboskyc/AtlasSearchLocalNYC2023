@@ -37,12 +37,6 @@
     }
 
     private async Task RunSearch() {
-        var pipeline = new BsonDocument[] {
-            new BsonDocument("$match", 
-                new BsonDocument("_id", 
-                new ObjectId(SearchTerm))
-            )
-        };
 
         string MDBCONNSTR = Environment.GetEnvironmentVariable("MDBCONNSTR");
         var settings = MongoClientSettings.FromConnectionString(MDBCONNSTR);
@@ -51,8 +45,8 @@
         var database = client.GetDatabase("sample_mflix");
         var col = database.GetCollection<Datamodels.Movie>("movies"); 
 
-        var result = await col.Aggregate<Datamodels.Movie>(pipeline).ToListAsync();
-        movies = result;
+        var filter = Builders<Movie>.Filter.Eq("_id", new ObjectId(SearchTerm));
+        movies = await col.Find(filter).ToListAsync();
 
     }
 }
