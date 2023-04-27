@@ -1,0 +1,13 @@
+{
+    "name" : "Chris Grabosky",
+    "title" : "Manager, Specialists Solutions Consulting",
+    "prevTitles" : ["Principal Solutions Architect", 
+                 "Bad Developer"],
+    "tenure" : 5.0,
+    "home" : "South Jersey",
+    "almamater" : "Drexel University",
+    "interests" : [ "family", "Bronco", 
+                  "technology", "paintball"],
+    // #SorryNotSorry
+    "note" : "Today's code is in C#" 
+}

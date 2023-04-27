@@ -4,3 +4,4 @@ AtlasSearchNYC/bin
 AtlasSearchNYC/.env
 *.stg
 .vs
+.vscode
