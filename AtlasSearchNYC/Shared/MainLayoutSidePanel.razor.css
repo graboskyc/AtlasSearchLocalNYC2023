@@ -1,0 +1,84 @@
+.collapse {
+    display: none;
+    animation-name: fadeOut;
+    animation-iteration-count: 1;
+    animation-duration: 1500ms;
+}
+
+.side-panel {
+    width: 30vw;
+    flex-shrink: 0;
+    padding: 20px;
+    color: #000;
+    background: #E3FCF7;
+    box-shadow: 0 0 70px rgba(0, 0, 0, 0.35);
+    position: absolute;
+    top:0px;
+    right:0px;
+    height: 100%;
+    z-index: 1000;
+    overflow: hidden;
+  }
+  
+  @keyframes fadeIn {
+    0% {opacity: 0;}
+    100% {opacity: 1;}
+ } 
+
+   @keyframes fadeOut {
+    0% {opacity: 1;}
+    100% {opacity: 0;}
+ } 
+
+ .fadeIn {
+    animation-name: fadeIn;
+    animation-iteration-count: 1;
+    animation-duration: 1500ms;
+ }
+
+ .btn-toggler {
+    height: 50px;
+    z-index: 800;
+ }
+
+ .side-panel a {
+   color: #000 !important;
+ }
+
+ .side-panel p,a {
+   color: #000 !important;
+ }
+
+ a {
+  color: #000 !important;
+  font-weight: bold;
+ }
+
+ .shiftleft {
+    right: 30vw !important;
+    position: absolute;
+    top:0px;
+    animation-name: fadeIn;
+    animation-iteration-count: 1;
+    animation-duration: 1500ms;
+}
+
+.dontshiftleft {
+  right: 0px !important;
+  position: absolute;
+  top: 0px;
+}
+
+.btn-mist {
+  background-color: #E3FCF7;
+  border-color: #E3FCF7;
+  color: #000;
+}
+
+li {
+  margin-bottom: 15px;
+}
+
+code {
+  color: #00684A !important;
+}

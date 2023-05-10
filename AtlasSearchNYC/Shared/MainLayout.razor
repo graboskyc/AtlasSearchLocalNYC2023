@@ -2,20 +2,16 @@
 
 <PageTitle>AtlasSearchNYC</PageTitle>
 
+<MainLayoutSidePanel OpenOnLoad=@showPanel />
+
 <div class="container">
     <div class="row">
-        <div class="col-1">
-            <ul style="padding-left:0px;">
-                <li><a href="/Search01">Version 1</a></li>
-                <li><a href="/Search02">Version 2</a></li>
-                <li><a href="/Results03/ghostbusters">Version 3</a></li>
-                <li><a href="/Results04/ghost busters">Version 4</a></li>
-                <li><a href="/Results05">Version 5</a></li>
-                <li><a href="/Results06">Version 6</a></li>
-            </ul>
-        </div>
-        <div class="col-11">
+        <div class="col-12">
             @Body
         </div>
     </div>
 </div>
+
+@code{ 
+    bool showPanel = false;
+}
