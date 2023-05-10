@@ -82,3 +82,9 @@ li {
 code {
   color: #00684A !important;
 }
+
+.scrollable {
+  overflow-y: scroll;
+  overflow-x: hidden;
+  height: 95vh;
+}
