@@ -1,0 +1,35 @@
+@if(ShowModal) {
+    <div class="ctr-bg-blurer"></div>
+
+    <div class="modal" tabindex="-1" id="ctr_modal">
+    <div class="modal-dialog-lg modal-dialog-scrollable">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">@Title</h5>
+            <button type="button" class="btn-close" @onclick=ToggleModal ></button>
+        </div>
+        <div class="modal-body">
+            @ChildContent
+        </div>
+        </div>
+    </div>
+    </div>
+}
+
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public string Title { get; set; } = "Help";
+    [Parameter]
+    public bool ShowModal { get; set; } = false;
+
+
+
+    private void ToggleModal() {
+        ShowModal = !ShowModal;
+    }
+
+}

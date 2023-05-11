@@ -21,7 +21,12 @@
                 It will require an exact match of an ObjectID to find anything.</li>
 
             <li><a href="/Search02">Version 2</a> - Our first iteration of using Atlas Search using a 
-                <a href="https://github.com/graboskyc/AtlasSearchLocalNYC2023/blob/main/Indexes/default.json" target="_blank">default index</a>.</li>
+                <a href="https://github.com/graboskyc/AtlasSearchLocalNYC2023/blob/main/Indexes/default.json" target="_blank">default index</a>.
+                <ul>
+                    <li>If you didn't have Atlas Search built in, you may need something like <button @onclick="@(e =>ShowModalArch = true)">this</button></li>
+                    <li>All we had to do to turn this on is press five mouse clicks like <button @onclick="@(e =>ShowModalIndex = true)">this</button></li>
+                </ul>    
+            </li>
 
             <li><a href="/Results03/ghostbusters">Version 3</a> - Introduces showing the search score and highlighting to the user so the user 
                 can understand relevance. It also uses custom sorting to sort by year rather than relevance. It uses a 
@@ -46,6 +51,22 @@
     </div>
 </div>
 
+@if(ShowModalArch) {
+<GenericBasicModal Title="Traditional Search" ShowModal=@ShowModalArch >
+    <center>
+        <img src="/Assets/Diagram.png" style="width:75vw;" />
+    </center>
+</GenericBasicModal>
+}
+
+@if(ShowModalIndex) {
+<GenericBasicModal Title="Five Clicks to Search" ShowModal=@ShowModalIndex >
+    <center>
+        <img src="/Assets/MakeIndex.gif" style="width:75vw;" />
+    </center>
+</GenericBasicModal>
+}
+
 @code {
     [Parameter]
     public bool OpenOnLoad { get; set; } = false;
@@ -55,6 +76,9 @@
     private string? NavMenuCssClass => !isVisible ? "collapse" : null;
     private string? ShouldShiftLeft => !isVisible ? "dontshiftleft" : "shiftleft";
     private string materialIcon => !isVisible ? "keyboard_double_arrow_left" : "keyboard_double_arrow_right";
+
+    private bool ShowModalArch = false;
+    private bool ShowModalIndex = false;
 
     private void ToggleMenu() {
         isVisible = !isVisible;
