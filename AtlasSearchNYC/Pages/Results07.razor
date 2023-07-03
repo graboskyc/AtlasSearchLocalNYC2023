@@ -1,0 +1,189 @@
+@page "/Results07/{SearchTerm}"
+@page "/Results07"
+@inject NavigationManager NavigationManager
+@using MongoDB.Bson;
+@using MongoDB.Driver;
+@using AtlasSearchNYC.Datamodels;
+@using System;
+@using MongoDB.Bson.IO;
+@using System.Web;
+@using System.IO;
+@inject IJSRuntime JSRuntime;
+@using OpenAI_API.Embedding;
+@using OpenAI_API.Models;
+
+
+<PageTitle>Content</PageTitle>
+
+<div class="row">
+    <h1>Vector Search Results</h1>
+</div>
+
+@if(_openAiApiKey != null) {
+
+    <div class="row">
+        <div class="col-9">
+            <SearchBarBasic SearchTerm="@SearchTerm" Redirect="Results07" OnSearchCallback="@ChangeSearchTerm" />
+        </div>
+
+        <div class="col-3">
+            <button style="width: 100%;" class="btn btn-lg btn-leafy" @onclick="RunSearchButton">Search</button>
+        </div>
+    </div>
+
+    @if(isLoading) {
+        <div class="row" style="margin-top:20px;">
+            <Loading />
+        </div>
+    } else {
+        <div class="row" style="margin-top:20px;">
+            @if(_vectorsAsString != null) {
+                <p>The string <code>@SearchTerm</code> has been vectorized with OpenAI's <code>ada-002-text</code> and has turned into:</p>
+                <div class="prepareForPrettyJson">@_vectorsAsString</div>
+            }
+        </div>
+
+        <div class="row" style="margin-top:20px;">
+            @if(movies != null) {
+                @foreach (var t in movies)
+                {
+                    <MovieTile SourceMovie=@t ShowSearchScore=false ShowMLT=true ChangeSearchCallback="@ChangeSearchTerm" ShowMovieDetails=true LearnMoreCallback="@OpenMovieModal" />
+                }
+            }
+        </div>
+    }
+
+    @if(ShowModal) {
+        <div class="ctr-bg-blurer"></div>
+
+        <div class="modal" tabindex="-1" id="ctr_modal">
+        <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Movie Details</h5>
+                <button type="button" class="btn-close" @onclick=ToggleModal ></button>
+            </div>
+            <div class="modal-body">
+                <MovieDetails SourceMovieId=SelectedMovieId />
+            </div>
+            </div>
+        </div>
+        </div>
+    }
+} else {
+    <div class="row" style="margin-top:20px;">
+        <p>No OpenAI API Key found</p>
+    </div>
+}
+
+
+@code {
+    [Parameter]
+    public string SearchTerm {get; set;} = null;
+    private bool isLoading = false;
+    
+    private float[] _vectors = null; 
+    private string _vectorsAsString = null;
+    private string _openAiApiKey = null;
+    private List<Datamodels.Movie> movies = new List<Movie>();
+
+    private ObjectId SelectedMovieId;
+    private bool ShowModal = false;
+
+    private void ToggleModal() {
+        ShowModal = !ShowModal;
+    }
+
+    protected override async Task OnInitializedAsync()
+    { 
+        if(!String.IsNullOrEmpty(Environment.GetEnvironmentVariable("OPENAIAPIKEY"))) {
+            _openAiApiKey = Environment.GetEnvironmentVariable("OPENAIAPIKEY");
+        }
+
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender) {
+        if(firstRender) {
+            if(SearchTerm != null) {
+                await RunSearch();
+            }
+        }
+
+    }
+
+    private async void RunSearchButton() {
+        NavigationManager.NavigateTo("/Results07/" + SearchTerm);
+        await RunSearch();       
+    }
+
+    private async void ChangeSearchTerm(string term) {
+        Console.WriteLine("R07 - ChangeSearchTerm " + term);
+        SearchTerm = term;
+        NavigationManager.NavigateTo("/Results07/" + SearchTerm);
+        
+        StateHasChanged();
+        await RunSearch();
+        
+        StateHasChanged();
+    }
+
+    private async void OpenMovieModal(ObjectId id) {
+        Console.WriteLine("R07 - Open Modal");
+        SelectedMovieId = id;
+        ShowModal = true;
+        StateHasChanged();
+    }
+
+    private async Task RunSearch() {
+        isLoading = true;        
+        StateHasChanged();
+        Console.WriteLine(SearchTerm);
+
+        var openAI = new OpenAI_API.OpenAIAPI(_openAiApiKey);
+        var results = await openAI.Embeddings.CreateEmbeddingAsync(new EmbeddingRequest(model: Model.AdaTextEmbedding, input: SearchTerm));
+        _vectors = results.Data.First().Embedding;
+        _vectorsAsString = "["+string.Join(",", _vectors)+"]";
+        Console.WriteLine(_vectorsAsString);
+
+        // theres a better way to do this but brute force it now, fix it later
+        BsonArray vectorsAsBsonArray = new BsonArray(_vectors);
+        _vectorsAsString = "["+string.Join(",",_vectors)+"]";
+
+
+        var pipeline = new BsonDocument[] {
+            new BsonDocument("$search", 
+            new BsonDocument
+                {
+                    { "index", "vector" }, 
+                    { "knnBeta", 
+            new BsonDocument
+                    {
+                        { "vector", vectorsAsBsonArray }, 
+                        { "path", "plot_embedding" }, 
+                        { "k", 200 }
+                    } }
+                }),
+            new BsonDocument("$limit", 10)
+        };
+
+        //var jsonWriterSettings = new JsonWriterSettings { OutputMode = JsonOutputMode.Strict }; // key part
+        //Console.WriteLine(pipeline.ToJson(jsonWriterSettings));
+
+        string MDBCONNSTR = Environment.GetEnvironmentVariable("MDBCONNSTR");
+        var settings = MongoClientSettings.FromConnectionString(MDBCONNSTR);
+        settings.ServerApi = new ServerApi(ServerApiVersion.V1);
+        var client = new MongoClient(settings);
+        var database = client.GetDatabase("sample_mflix");
+        var col = database.GetCollection<Datamodels.Movie>("movies_embedded_ada"); 
+
+        var result = await col.Aggregate<Datamodels.Movie>(pipeline).ToListAsync();
+        movies = result;
+        Console.WriteLine(movies.Count);
+        isLoading = false;
+        StateHasChanged();
+
+        await JSRuntime.InvokeVoidAsync("makeJsonPrettyGlobal");
+
+    }
+
+}

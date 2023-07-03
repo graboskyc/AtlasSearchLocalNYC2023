@@ -1,0 +1,12 @@
+{
+    "mappings": {
+      "dynamic": true,
+      "fields": {
+        "plot_embedding": {
+          "dimensions": 1536,
+          "similarity": "euclidean",
+          "type": "knnVector"
+        }
+      }
+    }
+  }

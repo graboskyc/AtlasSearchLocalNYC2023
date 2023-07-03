@@ -1,0 +1,40 @@
+@keyframes ctr_spin_rotation {
+    from { transform: rotateY(0deg) }
+    to { transform: rotateY(360deg) }
+}
+
+.aniloader {
+    animation: ctr_spin_rotation 2s infinite linear;
+    display:block;
+    background-color: var(--mdb-white);
+    border-radius: 100px; 
+    padding:50px;
+    height:50vh;
+    margin-top:25vh;
+}
+
+.ctr_spin_parent {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    resize: both;
+    overflow: hidden;
+    height:100vh;
+}
+.ctr_spin_child {
+    padding:1rem;
+    border-radius: 5px;
+    font-size: 2rem;
+    text-align: center;
+    height:100vh;
+    width: 80%;
+}
+.ctr_ctr_child {
+    margin-top:25vh;
+    text-align:center;
+    overflow: hidden;
+    padding:10px;
+    vertical-align: middle;
+    width: 100%;
+    height:100vh;
+}

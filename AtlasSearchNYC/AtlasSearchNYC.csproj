@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="blazor-dom-confetti" Version="0.0.0.5" />
     <PackageReference Include="MongoDB.Driver" Version="2.19.1" />
+    <PackageReference Include="OpenAI" Version="1.7.2" />
   </ItemGroup>
 
 </Project>

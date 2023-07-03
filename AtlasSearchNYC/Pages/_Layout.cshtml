@@ -34,6 +34,39 @@
         <a class="dismiss">🗙</a>
     </div>
 
+    
+    <script src="js/json-formatter.js"></script>
+    <script>
+        var errCt = 0;
+        window.makeJsonPrettyGlobal = function() {
+            if(errCt < 5) {
+                try {
+                    const toRenderDivs = document.querySelectorAll("div.prepareForPrettyJson");
+                    if(toRenderDivs.length == 0) {
+                        setTimeout(makeJsonPrettyGlobal(), 500);
+                    } else {
+                        toRenderDivs.forEach(function(toRender) {
+                            console.log(toRender.innerText);
+                            const rawJsonAsText = toRender.innerText;
+                            const rawJson = JSON.parse(rawJsonAsText);
+                            // https://www.npmjs.com/package/json-formatter-js
+                            const formatted = new JSONFormatter(rawJson, 0);
+
+                            toRender.removeChild(toRender.firstChild);
+                            toRender.appendChild(formatted.render());
+                            toRender.classList.remove("prepareForPrettyJson");
+                        });
+                    }
+                } catch (err) {
+                    console.log(errCt);
+                    console.log(err);
+                    errCt++;
+                    setTimeout(makeJsonPrettyGlobal, 500);
+                }
+            }
+        }
+    </script>
+
     <script src="_framework/blazor.server.js"></script>
 </body>
 </html>

@@ -47,6 +47,19 @@
             <code>genre</code>s and <code>cast</code> in the results, building that into a selectable list, and then can compound our search with any 
             that were selected. Lastly, we can use facets for another interesting use case by enhancing our recommendation engine to recommend other movies 
             with a specific cast member.</li>
+
+            @if(!String.IsNullOrEmpty(Environment.GetEnvironmentVariable("OPENAIAPIKEY"))) {
+                <li><a href="/Results07/capture%20poltergeists%20in%20a%20city">Version 7</a> - <i>Vector Search</i> - Up until this point we have been doing basic lexical 
+                or keyword search. That is to say, the words you are searching for should be in the corpus of text you are searching against. There are basic exceptions around 
+                word stemming that we covered earlier, or interjecting a custom list of synonyms. However the main story remains. With vector search, we are crossing into semantic 
+                search. Instead of using the words themselves, a machine learning model is used to understand the search based on the meaning of the words, not the characters in the 
+                words themselves. Thus in previous examples, we have searched for variations on <code>ghost</code> to find <code>Ghostbusters</code>. Now we will be searching for 
+                <code>poltergeist</code> which, although a synonym, we have not explicitly told Atlas Search it is a synonym, the word itself is not in the corpus of text being searched, 
+                and the ML model must be used to figure out what we are intending to search for. The process to do this is that we do not send the search the user typed in directly to the 
+                Atlas Search engine. Instead we must first send it through the ML model which converts it to a list of numbers representing the meaning of the search query. These 
+                numbers are then sent to the search itself. To see an example of the workflow, click <button @onclick="@(e =>ShowModalIndex = true)">here</button> and to see the code 
+                that powers it, look <a href="https://github.com/graboskyc/AtlasSearchLocalNYC2023/blob/main/Indexes/vector.json" target="_blank">at the index</a>.</li>
+            }
         </ul>
     </div>
 </div>
@@ -67,6 +80,14 @@
 </GenericBasicModal>
 }
 
+@if(ShowModalVector) {
+<GenericBasicModal Title="Vector Search" ShowModal=@ShowModalVector >
+    <center>
+        <img src="/Assets/Vector.png" style="width:75vw;" />
+    </center>
+</GenericBasicModal>
+}
+
 @code {
     [Parameter]
     public bool OpenOnLoad { get; set; } = false;
@@ -77,8 +98,7 @@
     private string? ShouldShiftLeft => !isVisible ? "dontshiftleft" : "shiftleft";
     private string materialIcon => !isVisible ? "keyboard_double_arrow_left" : "keyboard_double_arrow_right";
 
-    private bool ShowModalArch = false;
-    private bool ShowModalIndex = false;
+    private bool ShowModalArch, ShowModalIndex, ShowModalVector = false;
 
     private void ToggleMenu() {
         isVisible = !isVisible;

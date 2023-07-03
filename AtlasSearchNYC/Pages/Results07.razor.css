@@ -1,0 +1,20 @@
+.modal {
+    display:block !important;
+    top:5vh !important;
+}
+
+.modal-content {
+    border-radius: 2rem !important; 
+    box-shadow:  29px 29px 57px #636363 !important;
+}
+
+.ctr-bg-blurer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 999;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(5px);
+}
