@@ -41,3 +41,10 @@ See source code in [Results06](AtlasSearchNYC/Pages/Results06.razor) and its [fa
 See source code in [Results06](AtlasSearchNYC/Pages/Results06.razor) and [MovieDetails](AtlasSearchNYC/Shared/MovieDetails.razor) and its [facet index definition](Indexes/facets.json)
 
 ![](Screenshots/07.gif)
+
+## Vector search
+As of MongoDB .Local NYC 2023, [MongoDB announced a Public Preview of Vector Search](https://www.mongodb.com/products/platform/atlas-vector-search). The default data set for movies now distributes a collection which uses OpenAI's `ada-002-text` embeddings.
+
+To use this feature, in your `.env` file include the additional `OPENAI` environment variables. Note that the app can use the native OpenAI API (only use `OPENAIAPIKEY`) or Azure's (use `OPENAIAPIKEY` and `OPENAIDEPLOYMENT` and `OPENAIENDPOINT`)
+
+![](Screenshots/08.gif)

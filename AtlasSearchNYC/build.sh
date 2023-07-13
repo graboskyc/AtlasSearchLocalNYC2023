@@ -26,7 +26,7 @@ if [ $EXITCODE -eq 0 ]
 
     docker stop atlassearchfornyc
     docker rm atlassearchfornyc
-    docker run -t -i -d -p 9999:80 --name atlassearchfornyc -e "MDBCONNSTR=${MDBCONNSTR}" -e "OPENAIAPIKEY=${OPENAIAPIKEY}" --restart unless-stopped graboskyc/atlassearchfornyc:latest
+    docker run -t -i -d -p 9999:80 --name atlassearchfornyc -e "MDBCONNSTR=${MDBCONNSTR}" -e "OPENAIAPIKEY=${OPENAIAPIKEY}" -e "OPENAIDEPLOYMENT=${OPENAIDEPLOYMENT}" -e "OPENAIENDPOINT=${OPENAIENDPOINT}" --restart unless-stopped graboskyc/atlassearchfornyc:latest
 
     echo
     echo "+================================"

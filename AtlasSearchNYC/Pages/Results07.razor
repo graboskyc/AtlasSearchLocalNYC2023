@@ -11,6 +11,8 @@
 @inject IJSRuntime JSRuntime;
 @using OpenAI_API.Embedding;
 @using OpenAI_API.Models;
+@using Azure;
+@using Azure.AI.OpenAI;
 
 
 <PageTitle>Content</PageTitle>
@@ -38,7 +40,7 @@
     } else {
         <div class="row" style="margin-top:20px;">
             @if(_vectorsAsString != null) {
-                <p>The string <code>@SearchTerm</code> has been vectorized with OpenAI's <code>ada-002-text</code> and has turned into:</p>
+                <p>The string <code>@SearchTerm</code> has been vectorized with @_whichApi's <code>ada-002-text</code> and has turned into:</p>
                 <div class="prepareForPrettyJson">@_vectorsAsString</div>
             }
         </div>
@@ -85,6 +87,7 @@
     private float[] _vectors = null; 
     private string _vectorsAsString = null;
     private string _openAiApiKey = null;
+    private string _whichApi = "OpenAI";
     private List<Datamodels.Movie> movies = new List<Movie>();
 
     private ObjectId SelectedMovieId;
@@ -139,11 +142,28 @@
         StateHasChanged();
         Console.WriteLine(SearchTerm);
 
-        var openAI = new OpenAI_API.OpenAIAPI(_openAiApiKey);
-        var results = await openAI.Embeddings.CreateEmbeddingAsync(new EmbeddingRequest(model: Model.AdaTextEmbedding, input: SearchTerm));
-        _vectors = results.Data.First().Embedding;
-        _vectorsAsString = "["+string.Join(",", _vectors)+"]";
-        Console.WriteLine(_vectorsAsString);
+        // should we be using the openai API directly or the azure one?
+        if(!String.IsNullOrEmpty(Environment.GetEnvironmentVariable("OPENAIDEPLOYMENT"))) {
+            var openAiDeployment = Environment.GetEnvironmentVariable("OPENAIDEPLOYMENT");
+            var openAiEndpoint = Environment.GetEnvironmentVariable("OPENAIENDPOINT");
+            string engine = "text-embedding-ada-002";
+            OpenAIClient azureclient = new(new Uri(openAiEndpoint), new AzureKeyCredential(_openAiApiKey));
+            var eo = new EmbeddingsOptions(SearchTerm);
+            var results = await azureclient.GetEmbeddingsAsync(openAiDeployment, eo);
+            _vectors = results.Value.Data.First().Embedding.ToArray();
+            _vectorsAsString = "["+string.Join(",", _vectors)+"]";
+            Console.WriteLine(_vectorsAsString);
+            _whichApi = "Azure OpenAI";
+        }
+        else {
+            var openAI = new OpenAI_API.OpenAIAPI(_openAiApiKey);
+            var results = await openAI.Embeddings.CreateEmbeddingAsync(new EmbeddingRequest(model: Model.AdaTextEmbedding, input: SearchTerm));
+            _vectors = results.Data.First().Embedding;
+            _vectorsAsString = "["+string.Join(",", _vectors)+"]";
+            Console.WriteLine(_vectorsAsString);
+            _whichApi = "OpenAI";
+        }
+        // we now have the vector so merge back in to the same rest of the flow
 
         // theres a better way to do this but brute force it now, fix it later
         BsonArray vectorsAsBsonArray = new BsonArray(_vectors);
