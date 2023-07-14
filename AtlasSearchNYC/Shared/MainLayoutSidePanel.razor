@@ -23,8 +23,8 @@
             <li><a href="/Search02">Version 2</a> - Our first iteration of using Atlas Search using a 
                 <a href="https://github.com/graboskyc/AtlasSearchLocalNYC2023/blob/main/Indexes/default.json" target="_blank">default index</a>.
                 <ul>
-                    <li>If you didn't have Atlas Search built in, you may need something like <button @onclick="@(e =>ShowModalArch = true)">this</button></li>
-                    <li>All we had to do to turn this on is press five mouse clicks like <button @onclick="@(e =>ShowModalIndex = true)">this</button></li>
+                    <li>If you didn't have Atlas Search built in, you may need something like <button class="btn btn-success btn-sm"  @onclick="@(e =>ShowModalArch = true)">this</button></li>
+                    <li>All we had to do to turn this on is press five mouse clicks like <button class="btn btn-success btn-sm"  @onclick="@(e =>ShowModalIndex = true)">this</button></li>
                 </ul>    
             </li>
 
@@ -57,7 +57,7 @@
                 <code>poltergeist</code> which, although a synonym, we have not explicitly told Atlas Search it is a synonym, the word itself is not in the corpus of text being searched, 
                 and the ML model must be used to figure out what we are intending to search for. The process to do this is that we do not send the search the user typed in directly to the 
                 Atlas Search engine. Instead we must first send it through the ML model which converts it to a list of numbers representing the meaning of the search query. These 
-                numbers are then sent to the search itself. To see an example of the workflow, click <button @onclick="@(e =>ShowModalIndex = true)">here</button> and to see the code 
+                numbers are then sent to the search itself. To see an example of the workflow, click <button class="btn btn-success btn-sm" @onclick="@(e =>ShowModalVector = true)">here</button> and to see the code 
                 that powers it, look <a href="https://github.com/graboskyc/AtlasSearchLocalNYC2023/blob/main/Indexes/vector.json" target="_blank">at the index</a>.</li>
             }
         </ul>

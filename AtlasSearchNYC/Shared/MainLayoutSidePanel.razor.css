@@ -88,3 +88,7 @@ code {
   overflow-x: hidden;
   height: 95vh;
 }
+
+.btn-success { 
+  background-color: var(--mdb-link) !important;
+}
