@@ -48,3 +48,7 @@ As of MongoDB .Local NYC 2023, [MongoDB announced a Public Preview of Vector Sea
 To use this feature, in your `.env` file include the additional `OPENAI` environment variables. Note that the app can use the native OpenAI API (only use `OPENAIAPIKEY`) or Azure's (use `OPENAIAPIKEY` and `OPENAIDEPLOYMENT` and `OPENAIENDPOINT`)
 
 ![](Screenshots/08.gif)
+
+# Recording
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/Xu_AZlBp07U" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
